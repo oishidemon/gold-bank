@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bank
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-bank}
+      POSTGRES_DB: bank
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bank -d bank"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "127.0.0.1:5433:5432"
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://bank:${DB_PASSWORD:-bank}@db:5432/bank
+      APP_PASSWORD: ${APP_PASSWORD:?set APP_PASSWORD in .env}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+volumes:
+  pgdata:

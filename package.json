@@ -1,0 +1,13 @@
+{
+  "name": "gold-bank",
+  "private": true,
+  "workspaces": ["apps/api"],
+  "scripts": {
+    "db": "docker compose up -d db",
+    "dev": "npm run start:dev -w apps/api",
+    "build": "npm run build -w apps/api",
+    "start": "node apps/api/dist/main.js",
+    "test": "npm test -w apps/api",
+    "test:unit": "npm run test:unit -w apps/api"
+  }
+}

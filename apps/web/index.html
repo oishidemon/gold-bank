@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gold Bank</title>
+<style>
+:root{--bg:#eef1ec;--sf:#fff;--tx:#17201b;--mu:#66746b;--ln:#d5dcd3;--ac:#0f6b4f;--ac2:#e9f3ee;--wa:#b4531a;--go:#9a7400;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1512;--sf:#18211c;--tx:#e6ede8;--mu:#8a998f;--ln:#2a3830;--ac:#4cc79a;--ac2:#1b2a23;--wa:#f0955a;--go:#e8c14a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1512;--sf:#18211c;--tx:#e6ede8;--mu:#8a998f;--ln:#2a3830;--ac:#4cc79a;--ac2:#1b2a23;--wa:#f0955a;--go:#e8c14a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 "Segoe UI",system-ui,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:18px 14px 60px}
+h1{font:700 26px/1.1 Georgia,serif;margin:0 0 4px}
+h2{font:700 17px Georgia,serif;margin:26px 0 10px}
+.sub,.hint{color:var(--mu);margin:0 0 16px}
+.hint{margin:6px 0 0;font-size:13px}
+.tot{display:flex;gap:10px;flex-wrap:wrap}
+.tot div{flex:1 1 150px;background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:10px 12px}
+.tot b{display:block;font-size:21px;font-family:Georgia,serif}
+.tot span{color:var(--mu);font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input,select,button{font:inherit;padding:9px 10px;border-radius:6px;border:1px solid var(--ln);background:var(--sf);color:var(--tx)}
+input{flex:1 1 120px;min-width:0}
+button{cursor:pointer;background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600}
+button.g{background:transparent;color:var(--tx);border-color:var(--ln);font-weight:400}
+button.s{padding:5px 9px;font-size:13px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.wrap{overflow-x:auto;background:var(--sf);border:1px solid var(--ln);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--ln);white-space:nowrap}
+th{font-size:13px;color:var(--mu);font-weight:600}
+tr:last-child td{border-bottom:0}
+.n{text-align:right;font-variant-numeric:tabular-nums}
+.go{color:var(--go);font-weight:600}
+.mu{color:var(--mu)}
+.t{font-weight:700;font-size:12px;min-width:64px}
+.t.on{background:var(--ac2);color:var(--ac);border-color:var(--ac)}
+.t.off{background:transparent;color:var(--wa);border-color:var(--wa)}
+.pd{color:var(--ac);font-weight:700}.pn{color:var(--wa);font-weight:700}
+.empty{padding:18px;color:var(--mu);white-space:normal}
+.bar{margin-top:26px;display:flex;gap:8px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<main>
+<h1>Gold Bank</h1>
+<p class="sub">Track whose gold is in stock, what got sold, at what price, and who has been paid.</p>
+<div class="tot" id="tot"></div>
+
+<h2>Members</h2>
+<div class="row"><input id="on" placeholder="Member nickname" maxlength="30"><button id="ao">Add member</button></div>
+<div class="wrap" style="margin-top:10px"><table style="min-width:520px"><thead><tr><th>Member</th><th class="n">In stock GOLD</th><th class="n">Sold GOLD</th><th class="n">Unpaid $</th><th class="n">Paid $</th><th></th></tr></thead><tbody id="mem"></tbody></table></div>
+
+<h2>Add gold to stock</h2>
+<div class="row"><select id="am" aria-label="Member"></select><input id="ag" placeholder="Gold amount (100, 150, 500k)"><button id="aa">Add to stock</button></div>
+
+<h2>Record a sale</h2>
+<div class="row">
+<select id="so" aria-label="Member"></select>
+<input id="sg" placeholder="Gold sold">
+<input id="sp" type="number" min="0" step="any" placeholder="Gold price, $" style="flex:0 1 130px">
+<select id="su" aria-label="Price unit"><option value="1">per 1 gold</option><option value="1000">per 1k gold</option><option value="1000000">per 1M gold</option></select>
+<button id="as">Record sale</button>
+</div>
+<p class="hint" id="sh"></p>
+
+<h2>Ledger</h2>
+<div class="row" style="margin-bottom:10px"><select id="fo" aria-label="Filter by member"></select></div>
+<div class="wrap"><table><thead><tr><th>Member</th><th class="n">In stock GOLD</th><th class="n">Sold GOLD</th><th class="n">Paid $</th><th class="n">Gold price</th><th>Payment</th><th></th></tr></thead><tbody id="lg"></tbody></table></div>
+
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
