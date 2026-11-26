@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "gold-bank.fullname" . }}-pre-upgrade
+  labels:
+    {{- include "gold-bank.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: check-db
+          image: {{ .Values.waitImage }}
+          command: ["sh", "-c", "echo pre-upgrade: checking db service; nc -z {{ include "gold-bank.fullname" . }}-db 5432"]

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gold-bank.fullname" . }}-db
+  labels:
+    {{- include "gold-bank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: db
+spec:
+  replicas: {{ .Values.db.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "gold-bank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: db
+  template:
+    metadata:
+      labels:
+        {{- include "gold-bank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: db
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.db.image }}
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: {{ include "gold-bank.fullname" . }}
+            - secretRef:
+                name: {{ include "gold-bank.fullname" . }}
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          resources:
+            {{- toYaml .Values.db.resources | nindent 12 }}
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", {{ .Values.config.POSTGRES_USER | quote }}, "-d", {{ .Values.config.POSTGRES_DB | quote }}]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", {{ .Values.config.POSTGRES_USER | quote }}, "-d", {{ .Values.config.POSTGRES_DB | quote }}]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "gold-bank.fullname" . }}-db
+          {{- else }}
+          emptyDir: {}
+          {{- end }}

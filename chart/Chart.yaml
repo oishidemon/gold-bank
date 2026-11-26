@@ -1,0 +1,6 @@
+apiVersion: v2
+name: gold-bank
+description: Gold Bank - NestJS API + Postgres for tracking gold stock, sales and payouts
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
