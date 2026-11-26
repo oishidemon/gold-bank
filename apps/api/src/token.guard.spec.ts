@@ -1,11 +1,16 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { TokenGuard } from './token.guard';
 
 const ctx = (authorization?: string) =>
-  ({ switchToHttp: () => ({ getRequest: () => ({ headers: authorization ? { authorization } : {} }) }) }) as unknown as ExecutionContext;
+  ({
+    getHandler: () => ({}),
+    getClass: () => class {},
+    switchToHttp: () => ({ getRequest: () => ({ headers: authorization ? { authorization } : {} }) }),
+  }) as unknown as ExecutionContext;
 
 describe('TokenGuard', () => {
-  const guard = new TokenGuard();
+  const guard = new TokenGuard(new Reflector());
   const original = process.env.APP_PASSWORD;
 
   beforeEach(() => { process.env.APP_PASSWORD = 'secret'; });
@@ -29,5 +34,11 @@ describe('TokenGuard', () => {
   it('fails closed when APP_PASSWORD is not configured', () => {
     delete process.env.APP_PASSWORD;
     expect(() => guard.canActivate(ctx('Bearer '))).toThrow(UnauthorizedException);
+  });
+
+  it('lets @Public routes through without a password', () => {
+    const reflector = new Reflector();
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+    expect(new TokenGuard(reflector).canActivate(ctx())).toBe(true);
   });
 });

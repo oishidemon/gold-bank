@@ -44,6 +44,11 @@ describe('Bank API (integration, real Postgres)', () => {
     await http().get('/api/state').set(AUTH).expect(200);
   });
 
+  it('serves the version without a password', async () => {
+    const res = await http().get('/api/version').expect(200);
+    expect(res.body).toHaveProperty('version');
+  });
+
   it('creates members and rejects duplicates', async () => {
     await post('/api/members', { name: 'Vovka' }).expect(204);
     await post('/api/members', { name: 'Vovka' }).expect(409);

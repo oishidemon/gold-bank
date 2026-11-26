@@ -129,3 +129,5 @@ document.addEventListener("click", function (e) {
   else if (d.delo) { if (confirm("Delete this member and all their records?")) act(function () { return api("DELETE", "/members/" + encodeURIComponent(d.delo)); }); }
 });
 load().catch(function (e) { alert(e.message); });
+
+fetch("/api/version").then(function (r) { return r.json(); }).then(function (d) { document.getElementById("ver").textContent = "version " + d.version; }).catch(function () {});

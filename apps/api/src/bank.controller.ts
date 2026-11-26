@@ -1,10 +1,13 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { BankService } from './bank.service';
+import { Public } from './public.decorator';
 import { MemberDto, SaleDto, StockDto } from './dto';
 
 @Controller('api')
 export class BankController {
   constructor(private bank: BankService) {}
+
+  @Public() @Get('version') version() { return { version: process.env.APP_VERSION ?? 'dev' }; }
 
   @Get('state') state() { return this.bank.state(); }
 

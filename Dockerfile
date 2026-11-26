@@ -8,7 +8,9 @@ RUN npm run build
 
 FROM node:22-alpine
 WORKDIR /app
-ENV NODE_ENV=production
+# version shown by GET /api/version and in the page footer; set by CI (git tag)
+ARG APP_VERSION=dev
+ENV NODE_ENV=production APP_VERSION=$APP_VERSION
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
 RUN npm ci --omit=dev \
