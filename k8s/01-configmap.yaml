@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gold-bank-config
+  namespace: gold-bank
+data:
+  PORT: "3000"
+  NODE_ENV: "production"
+  POSTGRES_USER: "bank"
+  POSTGRES_DB: "bank"
