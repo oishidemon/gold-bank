@@ -1,0 +1,11 @@
+app:
+  replicaCount: 3
+  resources:
+    requests: { cpu: 200m, memory: 256Mi }
+    limits: { cpu: 1000m, memory: 512Mi }
+image:
+  tag: "1.1.0"
+ingress:
+  enabled: true
+  host: gold-bank.local
+# passwords are NOT stored here: pass them with --set secret.APP_PASSWORD=... --set secret.POSTGRES_PASSWORD=...

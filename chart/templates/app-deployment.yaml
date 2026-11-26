@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gold-bank.fullname" . }}
+  labels:
+    {{- include "gold-bank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gold-bank.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: app
+  template:
+    metadata:
+      labels:
+        {{- include "gold-bank.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: app
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: {{ .Values.waitImage }}
+          command: ["sh", "-c", "until nc -z {{ include "gold-bank.fullname" . }}-db 5432; do echo waiting for db; sleep 2; done"]
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.config.PORT | int }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "gold-bank.fullname" . }}
+            - secretRef:
+                name: {{ include "gold-bank.fullname" . }}
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.config.PORT | int }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.config.PORT | int }}
+            initialDelaySeconds: 15
+            periodSeconds: 10

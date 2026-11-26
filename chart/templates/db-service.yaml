@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gold-bank.fullname" . }}-db
+  labels:
+    {{- include "gold-bank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: db
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "gold-bank.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: db
+  ports:
+    - port: 5432
+      targetPort: 5432
